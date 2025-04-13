@@ -20,7 +20,7 @@ def parse_agrs():
     parser = argparse.ArgumentParser()
 
     
-    parser.add_argument('--image_dir', type=str, default='/cephfs/volumes/hpc_data_usr/k1623928/c50db1e8-c7a8-4708-9be4-3db18a0ea062/scratch_tmp/TIAN/TriCL_iuxray/data/images/')
+    parser.add_argument('--image_dir', type=str, default='data/iu_xray_images/')
     parser.add_argument('--ann_path', type=str, default='data/iu_xray.json')
 
     parser.add_argument('--dataset_name', type=str, default='mimic_cxr', choices=['iu_xray', 'mimic_cxr'])
@@ -108,7 +108,7 @@ def main(args):
 
     if args.dataset_name=='mimic_cxr':
         args.ann_path='data/mimic_cxr.json'
-        args.image_dir='/cephfs/volumes/hpc_data_prj/proj_loukides/bde7318a-93a3-4cd6-90a4-9007857ac4ea/scratch_tmp/haodi/MIMIC-CXR/files/'
+        args.image_dir='data/MIMIC-CXR/files/'
         args.threshold=10
    
 
