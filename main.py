@@ -20,16 +20,16 @@ def parse_agrs():
     parser = argparse.ArgumentParser()
 
     
-    parser.add_argument('--image_dir', type=str, default='data/iu_xray_images/')
-    parser.add_argument('--ann_path', type=str, default='data/iu_xray.json')
+    parser.add_argument('--image_dir', type=str, default='dataset/iu_xray/images/')
+    parser.add_argument('--ann_path', type=str, default='dataset/iu_xray/iu_xray_cot.json')
 
     parser.add_argument('--dataset_name', type=str, default='mimic_cxr', choices=['iu_xray', 'mimic_cxr'])
     parser.add_argument('--max_seq_len', type=int, default=130)
     parser.add_argument('--threshold', type=int, default=3, help='the cut off frequency for the words.')
     parser.add_argument('--num_workers', type=int, default=4, help='the number of workers for dataloader.')
-    parser.add_argument('--batch_size', type=int, default=6, help='the number of samples for a batch')
+    parser.add_argument('--batch_size', type=int, default=16, help='the number of samples for a batch')
 
-    parser.add_argument('--epochs', type=int, default=2, help='the number of training epochs.')
+    parser.add_argument('--epochs', type=int, default=20, help='the number of training epochs.')
     parser.add_argument('--lr', type=float, default=3e-5, help='the learning rate for the visual extractor.')
     parser.add_argument('--lr_ve', type=float, default=5e-6, help='the learning rate for the visual extractor.')
     parser.add_argument('--weight_decay', type=float, default=5e-5, help='the weight decay.')
@@ -107,8 +107,8 @@ def main(args):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     if args.dataset_name=='mimic_cxr':
-        args.ann_path='data/mimic_cxr.json'
-        args.image_dir='data/MIMIC-CXR/files/'
+        args.ann_path='dataset/mimic_cxr/mimic_cxr_cot.json'
+        args.image_dir='dataset/mimic_cxr/images/'
         args.threshold=10
    
 
@@ -202,7 +202,6 @@ def train_and_val(args,model,image_encoder,train_loader,val_loader,test_loader,o
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-            break
 
         log = {'train_loss': train_loss / len(train_loader)} 
         print('\t{:15s}: {}'.format('train_loss', log['train_loss']))
@@ -251,17 +250,13 @@ def train_and_val(args,model,image_encoder,train_loader,val_loader,test_loader,o
                     current_output.append(prev.item())   
                     input_ids = torch.cat((input_ids, prev.unsqueeze(0)), dim = 1)   
                     segment_ids = torch.cat((segment_ids, new_segment.unsqueeze(0)), dim = 1)
-            decoded_sequences = tokenizer.decode(current_output, skip_special_tokens=True).lstrip().lower()
-           
+            decoded_sequences = tokenizer.decode(current_output, skip_special_tokens=True).lstrip().lower() 
             generated_report = get_report(decoded_sequences)
             reports = []
             reports.append(generated_report)
             ground_truths = tokenizer.decode_batch(report_ids,skip_special_tokens=True) 
-           
             val_res.extend(reports)
             val_gts.extend(ground_truths)
-
-            break
 
         val_scores = metrics({i: [gt] for i, gt in enumerate(val_gts)},{i: [re] for i, re in enumerate(val_res)})
         log.update(**{'val_' + k: v for k, v in val_scores.items()})      
@@ -324,10 +319,7 @@ def train_and_val(args,model,image_encoder,train_loader,val_loader,test_loader,o
             
             test_res.extend(reports)
             test_gts.extend(ground_truths)
-
-            break
                 
-             
         test_scores = metrics({i: [gt] for i, gt in enumerate(test_gts)},{i: [re] for i, re in enumerate(test_res)})
         log.update(**{'test_' + k: v for k, v in test_scores.items()})      
         
@@ -340,12 +332,10 @@ def train_and_val(args,model,image_encoder,train_loader,val_loader,test_loader,o
         need_update = recorder.needsUpdate(log,epoch)
         save_checkpoint(args,epoch,model,optimizer,scheduler,recorder.best_score,need_update)
 
-
         if recorder.check_early_stop(epoch,patience=args.patience):
             print(f'Early stopping triggered! No improvement for {args.patience} epochs.')
             print(f'Best {args.mode}_BLEU4: {recorder.best_score} at epoch {recorder.best_epoch}')
             break
-
 
         scheduler.step()
 

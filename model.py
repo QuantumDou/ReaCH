@@ -572,7 +572,7 @@ class GPT2LMHeadModel(GPT2PreTrainedModel):
 
                 # visual_cam
                 visual_grad_cam = visual_grad.sum(2)
-                v_ind = visual_grad_cam.sort(1, descending=True)[1][:, :30] 
+                v_ind = visual_grad_cam.sort(1, descending=True)[1][:, :30]   #20 for mimic
                 pos_visual_mask = torch.zeros(batch_size, image_input.size(1), device=self.device)
                 neg_visual_mask = torch.ones_like(pos_visual_mask)
                 pos_visual_mask.scatter_(1, v_ind, 1)
@@ -664,7 +664,7 @@ class GPT2LMHeadModel(GPT2PreTrainedModel):
         for i in range(0,logits.shape[0]):
             eos_positions = torch.where(predicted_ids[i] == eos_id)
             if eos_positions[0].numel() > 0:
-                end_idx.append(eos_positions[0][-1].item())  #最后一个eos
+                end_idx.append(eos_positions[0][-1].item())  
             else:
                 end_idx.append(cap_end[i])
 

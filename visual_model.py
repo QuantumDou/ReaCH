@@ -12,7 +12,7 @@ import numpy as np
 
 class CLIPConfig:
     cast_dtype: str = 'fp16'
-    config_path: str = '/cephfs/volumes/hpc_data_usr/k1623928/c50db1e8-c7a8-4708-9be4-3db18a0ea062/scratch_tmp/TIAN/TriCL_iuxray/BiomedCLIP/open_clip_config.json'
+    config_path: str = 'checkpoint/BiomedCLIP/open_clip_config.json'
     def __init__(self):
 
         with open(self.config_path, 'r', encoding='utf-8') as f:
@@ -29,7 +29,7 @@ class CLIPEncoder(nn.Module):
         super(CLIPEncoder, self).__init__()
         self.config = config
         self.img_encoder = CustomTextCLIP(**config.model_cfg, cast_dtype=config.cast_dtype)
-        checkpoint = torch.load('/cephfs/volumes/hpc_data_usr/k1623928/c50db1e8-c7a8-4708-9be4-3db18a0ea062/scratch_tmp/TIAN/TriCL_iuxray/BiomedCLIP/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224.pth')
+        checkpoint = torch.load('checkpoint/BiomedCLIP/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224.pth')
         self.img_encoder.load_state_dict(checkpoint, strict=False)
         self.img_encoder.to(device)
 

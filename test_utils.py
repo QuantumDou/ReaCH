@@ -20,7 +20,7 @@ def compute_scores(gts, res):
     # Set up scorers
     scorers = [
         (Bleu(4), ["BLEU_1", "BLEU_2", "BLEU_3", "BLEU_4"]),
-        # (Meteor(), "METEOR"),
+        (Meteor(), "METEOR"),
         (Rouge(), "ROUGE_L"),
         (Cider(),"CIDER")
     ]
@@ -101,7 +101,6 @@ class Recorder():
                 f'{self.mode}_BLEU_4': float('-inf'),
             }
         }
-        print(f'mode = {self.mode}')
 
     def record_best(self,log):
         update_flag = (log[f'{self.mode}_BLEU_4'] >= self.best_recorder[self.mode][f'{self.mode}_BLEU_4']) 
@@ -136,10 +135,10 @@ def clean_train_sentence(text):
     punc = list(punctuation)
     text = re.sub(r"xxxx", " ", text)
     text = re.sub("[^a-z\s]", "", text.lower())
-    text_nopunc = [char for char in text if char not in punc] #去掉标点符号  #punctuation = r"""!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"""
+    text_nopunc = [char for char in text if char not in punc] 
     text_nopunc = "".join(text_nopunc)
     wd = []
-    for word in text_nopunc.split(): #将单词组成句子
+    for word in text_nopunc.split(): 
         wd.append(word)
     sentence = " ".join(wd)
     if sentence.strip()=='images':

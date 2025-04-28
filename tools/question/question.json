@@ -1,0 +1,13 @@
+{
+    "question":[
+        "Are there any abnormalities detected in the image ?",
+        "Does this image show any abnormalities ?",
+        "Is there any evidence of abnormalities in the image ?",
+        "Are there any significant findings in the image ?",
+        "Are abnormalities present in this medical image ?",
+        "Does the medical image indicate any abnormalities ?",
+        "Are any abnormal findings visible in this image ?",
+        "Does this image show any unexpected findings ?"
+    ]      
+
+}
