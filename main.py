@@ -21,7 +21,7 @@ def parse_agrs():
 
     
     parser.add_argument('--image_dir', type=str, default='dataset/iu_xray/images/')
-    parser.add_argument('--ann_path', type=str, default='dataset/iu_xray/iu_xray_cot.json')
+    parser.add_argument('--ann_path', type=str, default='dataset/iu_xray/iu_CDRC.json')
 
     parser.add_argument('--dataset_name', type=str, default='mimic_cxr', choices=['iu_xray', 'mimic_cxr'])
     parser.add_argument('--max_seq_len', type=int, default=130)
@@ -107,7 +107,7 @@ def main(args):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     if args.dataset_name=='mimic_cxr':
-        args.ann_path='dataset/mimic_cxr/mimic_cxr_cot.json'
+        args.ann_path='dataset/mimic_cxr/mimic_CDRC.json'
         args.image_dir='dataset/mimic_cxr/images/'
         args.threshold=10
    
@@ -258,6 +258,7 @@ def train_and_val(args,model,image_encoder,train_loader,val_loader,test_loader,o
             val_res.extend(reports)
             val_gts.extend(ground_truths)
 
+        model.train()
         val_scores = metrics({i: [gt] for i, gt in enumerate(val_gts)},{i: [re] for i, re in enumerate(val_res)})
         log.update(**{'val_' + k: v for k, v in val_scores.items()})      
         for key, value in val_scores.items():

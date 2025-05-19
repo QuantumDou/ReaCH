@@ -44,7 +44,7 @@
 "effusion": "pleural", "pleural fluid": "pleural", "thickening": "pleural", "pneumothorax": "pleural", "pleural calcification": "pleural", 
 "fracture": "bone", "arthritic": "bone", "costochondral calcification": "bone", "bone lesion": "bone", 
 "rib lesion": "bone", "acromioclavicular widen": "bone", "coracoclavicular widen": "bone", "demineralization": "bone", "acute finding": "bone", 
- "emphysema": "lung", "pneumonia": "lung", "scar": "lung", "nodule": "lung", "edema": "lung", "infiltrate": "lung", "hyperinflation":"lung",
+ "emphysema": "lung", "pneumonia": "lung", "scar": "lung", "nodule": "lung", "edema": "lung", "infiltrate": "lung",
 "atelectasis": "lung", "engorge": "lung", "lung lesion": "lung", "lobe lesion": "lung", "bullae": "lung", "vascular congestion": "lung", "obstructive": "lung", 
 "inflate": "lung", "nodular opacity": "lung", "lobe opacity": "lung", "lung opacity": "lung", "hilar opacity": "lung", "bronchovascular crowding": "lung", 
 "bronchovascular marking": "lung", "pulmonary opacity": "lung", "juxtahilar opacity": "lung", "low volume": "lung", "diminished": "lung", "decreased volume": "lung", 

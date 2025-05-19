@@ -1,11 +1,9 @@
 import json
 import re
-import nltk
 import pandas as pd
 from nltk.corpus import stopwords
 from string import punctuation
 from nltk.stem import PorterStemmer
-import ast
 
 with open("process.json", "r") as f:
     js = json.load(f)
@@ -19,7 +17,7 @@ with open("process.json", "r") as f:
     organs_tissue_description = js["organs_tissue_description"]
     general_disease = js["general_disease"]
 # Set stopwords
-stop_words = set(stopwords.words("english"))
+# stop_words = set(stopwords.words("english"))
 # Stemming
 ps = PorterStemmer()
 # punctuation
@@ -399,7 +397,7 @@ def get_new_csv(df):
 
             if len(organ) > 0:
                 for t in range(len(organ)):
-                    key = disease[t].replace('no no ','no ') + "-" + organ[t]
+                    key = disease[t].replace('no no ','no ').replace('no no ','no ') + "-" + organ[t]
                     key=change(key)
                     sentence_disease.append(key)  
 
@@ -414,3 +412,21 @@ def get_new_csv(df):
     
     df.to_csv("iuxray.csv", header=True, index=False)
    
+
+
+# 第一步：生成csv文件
+custom_columns = ['id', 'split','image_path','report']
+df = pd.DataFrame(columns=custom_columns)
+
+with open('../meta_data/annotation.json', 'r', encoding='utf-8') as file:
+    data = json.load(file)
+    data_list = []
+for i,section in enumerate(data.values()):  # 这将遍历每个键对应的值，即train, val, test部分
+    for item in section: 
+        sample = {}
+        sample = {'id': item['id'], 'split':item['split'],'image_path':item['image_path'],'report': item['report']}
+        data_list.append(sample)
+
+df = pd.DataFrame(data_list)
+get_new_csv(df)
+print("CSV文件清洗完成")

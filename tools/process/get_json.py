@@ -5,11 +5,7 @@ import ast
 from get_answer import clean_disease_type,clean_normal_type
 import re
 from string import punctuation
-
-random.seed(9233) 
-random_list_train = [random.randint(0, 7) for _ in range(2069)]
-random_list_val = [random.randint(0, 7) for _ in range(296)]
-random_list_test = [random.randint(0, 7) for _ in range(590)]
+import pickle
 
 def parse_decimal(text):
     find_float = lambda x: re.search("\d+(\.\d+)", x).group()
@@ -47,13 +43,25 @@ def clean_train_report(report):
         tokens = [clean_train_sentence(sent) for sent in report_cleaner(report) if sent!='' if clean_train_sentence(sent) != []]
         report = ' . '.join(tokens) + ' .'
         return report
+    
+def select_question(i):
+    return ques[i]
+
+def filter_fields(data, fields_to_keep):
+    return {k: {field: v[field] for field in fields_to_keep if field in v} for k, v in data.items()}
+
+
+with open('../question/iu_xray/random_list_train.pkl', 'rb') as f:
+    random_list_train = pickle.load(f)
+with open('../question/iu_xray/random_list_val.pkl', 'rb') as f:
+    random_list_val = pickle.load(f)
+with open('../question/iu_xray/random_list_test.pkl', 'rb') as f:
+    random_list_test = pickle.load(f)
 
 
 tag_dict = {}
-
-with open('meta_data/iu_xray_major_tags.json', 'r', encoding='utf-8') as file:
+with open('../meta_data/iu_xray_major_tags.json', 'r', encoding='utf-8') as file:
     data = json.load(file)
-    count = 0
     for key,value in data.items():
         parts = key.split('-')
         img_id = '-'.join(parts[:-1])
@@ -62,23 +70,17 @@ with open('meta_data/iu_xray_major_tags.json', 'r', encoding='utf-8') as file:
         else :
              tag =  1   
         tag_dict[img_id] = tag
-        count+=1
-
-
+        
+        
 ques=[]
-
-with open('question/question.json', 'r') as file:
+with open('../question/question.json', 'r') as file:
     ques_data = json.load(file)
     ques = ques_data["question"]
-    
-def select_question(i):
-    return ques[i]
 
 train_data = {}
 val_data = {}
 test_data = {}
 train_count,val_count,test_count=0,0,0
-
 with open("iuxray.csv", mode='r', encoding='utf-8') as file:
     csv_reader = csv.DictReader(file)
     for row in csv_reader:
@@ -123,12 +125,9 @@ with open("iuxray.csv", mode='r', encoding='utf-8') as file:
                     'answer':clean_normal_type(row['pairs']) if tag_dict[row['id']] ==0 else clean_disease_type(row['pairs'])
                 }
                 test_count+=1
-                
 
-def filter_fields(data, fields_to_keep):
-    return {k: {field: v[field] for field in fields_to_keep if field in v} for k, v in data.items()}
+
 fields_to_keep = ['id', 'image_path', 'report','tag','question','disease_pair','answer','split']
-
 filtered_train_data = filter_fields(train_data, fields_to_keep)
 filtered_val_data = filter_fields(val_data, fields_to_keep)
 filtered_test_data = filter_fields(test_data, fields_to_keep)
@@ -139,5 +138,5 @@ combined_data = {
     'test': list(filtered_test_data.values())
 }
 
-with open("iu_xray_cot.json", mode='w', encoding='utf-8') as file:
+with open("../../dataset/iu_xray/IU_CDRC.json", mode='w', encoding='utf-8') as file:
     json.dump(combined_data, file, ensure_ascii=False, indent=4)
